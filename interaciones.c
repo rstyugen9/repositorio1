@@ -1,75 +1,90 @@
 #include <stdio.h>
 
+#define PARCIALES 3
+
 void main()
 {
-    int numero, iteraciones;
-    int condiciones = 0;
+    int numAlumnos;
 
-    while (condiciones != 2)
+    printf("Ingrese la cantidad de alumnos: ");
+    scanf("%d", &numAlumnos);
+
+    float matriz[PARCIALES][numAlumnos];
+    float sumaFila[PARCIALES] = {0};
+    float sumaColumna[numAlumnos];
+    float promedioAlumno[numAlumnos];
+    float promedioParcial[PARCIALES];
+
+    char nombre[numAlumnos][50];
+    char grupo[numAlumnos][20];
+
+    // Captura de datos
+    for (int j = 0; j < numAlumnos; j++)
     {
-        printf("\n::Generador de Tablas de Multiplicar::\n");
+        printf("\nAlumno %d\n", j + 1);
 
-        printf("Ingrese un número entero PAR:\n");
-        if (scanf("%d", &numero) != 1)
-        {
-            printf("El numero es fraccionario o invalido, favor de volver a ingresarlo\n");
-            while (getchar() != '\n'); // limpiar buffer
-            continue;
-        }
+        printf("Nombre: ");
+        scanf("%s", nombre[j]);
 
-        if (numero % 2 == 0)
-        {
-            printf("El numero %d es PAR y es entero\n", numero);
-            condiciones++;
-        }
-        else
-        {
-            printf("El numero no es PAR, favor de volver a ingresarlo\n");
-        }
+        printf("Grupo: ");
+        scanf("%s", grupo[j]);
 
-        printf("\nIngrese la cantidad de iteraciones (entero PAR):\n");
-        if (scanf("%d", &iteraciones) != 1)
+        for (int i = 0; i < PARCIALES; i++)
         {
-            printf("La cifra es fraccionaria o invalida, favor de volver a ingresarla\n");
-            while (getchar() != '\n');
-            condiciones = 0;
-            continue;
-        }
-
-        if (iteraciones % 2 == 0)
-        {
-            printf("La cifra de iteraciones %d es PAR y entero\n", iteraciones);
-            condiciones++;
-        }
-        else
-        {
-            printf("La cifra no es PAR, favor de volver a ingresarla\n");
-        }
-
-        if (condiciones < 2)
-        {
-            condiciones = 0;
-            numero = 0;
-            iteraciones = 0;
+            printf("Ingrese calificacion Parcial %d: ", i + 1);
+            scanf("%f", &matriz[i][j]);
         }
     }
 
-    // Cabecera de la tabla
-    printf("\nTabla de multiplicar del %d\n", numero);
-    printf("-----------------------------\n");
-
-    for (int i = 1; i <= iteraciones; i++)
+    // Calculo de sumas
+    for (int i = 0; i < PARCIALES; i++)
     {
-        int resultado = numero * i;
-        printf("%2d x %2d = %3d\n", numero, i, resultado);
-
-        if (i % 10 == 0)
+        for (int j = 0; j < numAlumnos; j++)
         {
-            printf("----------- BLOQUE 10 -----------\n");
+            sumaFila[i] += matriz[i][j];
         }
+        promedioParcial[i] = sumaFila[i] / numAlumnos;
     }
 
-    printf("-----------------------------\n");
+    for (int j = 0; j < numAlumnos; j++)
+    {
+        sumaColumna[j] = 0;
+        for (int i = 0; i < PARCIALES; i++)
+        {
+            sumaColumna[j] += matriz[i][j];
+        }
+        promedioAlumno[j] = sumaColumna[j] / PARCIALES;
+    }
 
-    return 0;
+    // Mostrar tabla
+    printf("\n\n---------------- TABLA DE CALIFICACIONES ----------------\n\n");
+
+    printf("\t\t");
+    for (int j = 0; j < numAlumnos; j++)
+    {
+        printf("Alumno %d\t", j + 1);
+    }
+    printf("\n");
+
+    for (int i = 0; i < PARCIALES; i++)
+    {
+        printf("Parcial %d\t", i + 1);
+        for (int j = 0; j < numAlumnos; j++)
+        {
+            printf("%.2f\t\t", matriz[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\nPromedio Alumno\t");
+    for (int j = 0; j < numAlumnos; j++)
+    {
+        printf("%.2f\t\t", promedioAlumno[j]);
+    }
+
+    printf("\n\nPromedio Parcial\n");
+    for (int i = 0; i < PARCIALES; i++)
+    {
+        printf("Parcial %d: %.2f\n", i + 1, promedioParcial[i]);
+    }
 }
