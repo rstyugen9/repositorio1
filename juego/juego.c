@@ -34,6 +34,11 @@ void juego_inicializar(Juego *j)
     j->jugador_x = 1;
     j->jugador_y = 1;
 
+    j->pasos = 0;
+    j->choques = 0;
+    j->ultima_tecla = '_';
+    j->estado = ESTADO_JUGANDO;
+
     // Si alguien cambia el mapa y esta posición cae
     // en una pared, buscamos una alternativa simple
     //(primera celda transitable)
@@ -58,14 +63,14 @@ void juego_inicializar(Juego *j)
 }
 void juego_intentar_mover(Juego *j, int dx, int dy)
 {
-    // Calculamos posicion destino
     int nx = j->jugador_x + dx;
     int ny = j->jugador_y + dy;
-    // Verificamos colision: si es pared, no hacemos nada
-    if (juego_es_pared(j, nx, ny))
-        return;
 
-    // Si no es pared, actualizamos posicion del jugador
+    if (juego_es_pared(j, nx, ny)){
+        j->choques++;
+        return;
+    }
+
     j->jugador_x = nx;
     j->jugador_y = ny;
     j->pasos++;

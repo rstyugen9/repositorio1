@@ -6,11 +6,23 @@
 #define ANCHO 20
 
 //Definir estructura utilitaria para almacenar estado del juego
+typedef enum {
+    ESTADO_MENU,
+    ESTADO_JUGANDO,
+    ESTADO_INSTRUCCIONES,
+    ESTADO_SALIR
+} EstadoJuego;
+
 typedef struct {
-    char mapa[ALTO][ANCHO+1]; //+1 para el caracter nulo de fin de linea
+    char mapa[ALTO][ANCHO+1]; // +1 para la terminacion nula
     int jugador_x;
     int jugador_y;
     int pasos;
+
+    int choques;
+    char ultima_tecla;
+    EstadoJuego estado;
+
 } Juego;
 
 //Funciones para inicializar y actualizar el juego

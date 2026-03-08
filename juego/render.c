@@ -3,21 +3,31 @@
 #include <stdio.h>
 
 void render_juego(const Juego *j){
-    //Limpiamos la pantalla antes de dibujar
+    // Limpiar pantalla
     consola_limpiar_simple();
-    //Mostrar el HUD mínimo
-    printf("Pasos: %d \n\n", j->pasos);
 
-    //Dibujar el mapa y al jugador
+    // HUD
+    printf("Pasos: %d\n", j->pasos);
+    printf("Posicion: (%d,%d)\n", j->jugador_x, j->jugador_y);
+    printf("Ultima tecla: %c\n", j->ultima_tecla);
+    printf("Choques: %d\n\n", j->choques);
+
+    if (j->choques > 0){
+    printf("Advertencia: chocaste contra una pared!\n\n");
+}
+
+    // Dibujar mapa
     for (int y = 0; y < ALTO; y++){
         for (int x = 0; x < ANCHO; x++){
             if (x == j->jugador_x && y == j->jugador_y){
-                putchar('@'); // Dibujar al jugador
-            } else {
-                putchar(j->mapa[y][x]); // Dibujar el mapa
+                putchar('@');
+            } 
+            else{
+                putchar(j->mapa[y][x]);
             }
         }
-        putchar('\n'); // Nueva línea al final de cada fila
+        putchar('\n');
     }
-    puts("\n Controles: w/a/s/d + enter para mover, q para salir");
+
+    puts("\nControles: W A S D para mover, Q para salir");
 }
