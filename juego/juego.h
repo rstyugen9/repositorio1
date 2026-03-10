@@ -23,6 +23,10 @@ typedef struct {
     char ultima_tecla;
     EstadoJuego estado;
 
+    int trofeo_x;
+    int trofeo_y;
+    int trofeos_recogidos;
+
 } Juego;
 
 //Funciones para inicializar y actualizar el juego
