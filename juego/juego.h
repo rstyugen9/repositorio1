@@ -1,5 +1,6 @@
 #ifndef JUEGO_H
 #define JUEGO_H
+#define MAX_ENEMIGOS 3
 
 //Definir dimensiones fijas del mapa para la sesion
 #define ALTO 10
@@ -27,12 +28,20 @@ typedef struct {
     int trofeo_y;
     int trofeos_recogidos;
 
+    int vidas;
+
+    int enemigos_x[MAX_ENEMIGOS];
+    int enemigos_y[MAX_ENEMIGOS];
+
+
 } Juego;
 
 //Funciones para inicializar y actualizar el juego
 void juego_inicializar(Juego *j);
 
 void juego_intentar_mover(Juego *j, int dx, int dy);
+
+void juego_mover_enemigos(Juego *j);
 
 int juego_es_pared(const Juego *j, int x, int y);
 
