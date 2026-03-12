@@ -1,27 +1,30 @@
 #ifndef JUEGO_H
 #define JUEGO_H
-#define MAX_ENEMIGOS 3
 
-//Definir dimensiones fijas del mapa para la sesion
+#include <stdio.h>
+
 #define ALTO 10
 #define ANCHO 20
+#define MAX_ENEMIGOS 5
 
-//Definir estructura utilitaria para almacenar estado del juego
 typedef enum {
     ESTADO_MENU,
     ESTADO_JUGANDO,
+    ESTADO_PAUSA,
     ESTADO_INSTRUCCIONES,
     ESTADO_SALIR
 } EstadoJuego;
 
 typedef struct {
-    char mapa[ALTO][ANCHO+1]; // +1 para la terminacion nula
+    char mapa[ALTO][ANCHO+1];
+
     int jugador_x;
     int jugador_y;
-    int pasos;
 
+    int pasos;
     int choques;
     char ultima_tecla;
+
     EstadoJuego estado;
 
     int trofeo_x;
@@ -32,17 +35,19 @@ typedef struct {
 
     int enemigos_x[MAX_ENEMIGOS];
     int enemigos_y[MAX_ENEMIGOS];
+    int enemigos_trofeos[MAX_ENEMIGOS];
 
+    int num_enemigos;
 
 } Juego;
 
-//Funciones para inicializar y actualizar el juego
 void juego_inicializar(Juego *j);
-
 void juego_intentar_mover(Juego *j, int dx, int dy);
-
 void juego_mover_enemigos(Juego *j);
+
+void juego_guardar(Juego *j);
+int juego_cargar(Juego *j);
 
 int juego_es_pared(const Juego *j, int x, int y);
 
-#endif // JUEGO_H
+#endif
