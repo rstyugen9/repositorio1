@@ -17,6 +17,13 @@ static const char *MAPA_FIJO[ALTO] = {
 "####################"
 };
 
+// Distancia Manhattan (para decidir si perseguir trofeo o jugador)
+static int dist(int x1,int y1,int x2,int y2){
+    int dx = x1 - x2; if(dx < 0) dx = -dx;
+    int dy = y1 - y2; if(dy < 0) dy = -dy;
+    return dx + dy;
+}
+
 int juego_es_pared(const Juego *j, int x, int y)
 {
     if(x < 0 || x >= ANCHO || y < 0 || y >= ALTO)
@@ -28,22 +35,18 @@ int juego_es_pared(const Juego *j, int x, int y)
 void juego_guardar(Juego *j)
 {
     FILE *f = fopen("save.dat","wb");
-
     if(!f) return;
 
     fwrite(j,sizeof(Juego),1,f);
-
     fclose(f);
 }
 
 int juego_cargar(Juego *j)
 {
     FILE *f = fopen("save.dat","rb");
-
     if(!f) return 0;
 
     fread(j,sizeof(Juego),1,f);
-
     fclose(f);
 
     return 1;
@@ -93,8 +96,8 @@ void juego_inicializar(Juego *j)
         j->enemigos_trofeos[i] = 0;
     }
 
+    // iniciar con 1 enemigo en esquina inferior derecha
     j->num_enemigos = 1;
-
     j->enemigos_x[0] = ANCHO-2;
     j->enemigos_y[0] = ALTO-2;
 }
@@ -123,10 +126,10 @@ void juego_intentar_mover(Juego *j,int dx,int dy)
             printf("¡Vida extra!\n");
         }
 
-        if(j->trofeos_recogidos < 10)
+        if(j->trofeos_recogidos < 20)
             juego_generar_trofeo(j);
         else{
-            printf("\n¡GANASTE! Capturaste 10 trofeos\n");
+            printf("\n¡GANASTE! Capturaste 20 trofeos\n");
             j->estado = ESTADO_MENU;
         }
     }
@@ -136,14 +139,27 @@ void juego_mover_enemigos(Juego *j)
 {
     for(int i=0;i<j->num_enemigos;i++){
 
-        int dx=0;
-        int dy=0;
+        int dx = 0;
+        int dy = 0;
 
-        if(j->jugador_x > j->enemigos_x[i]) dx = 1;
-        if(j->jugador_x < j->enemigos_x[i]) dx = -1;
+        // Si el trofeo está cerca, el enemigo lo persigue
+        if(dist(j->enemigos_x[i], j->enemigos_y[i], j->trofeo_x, j->trofeo_y) <= 6)
+        {
+            if(j->trofeo_x > j->enemigos_x[i]) dx = 1;
+            if(j->trofeo_x < j->enemigos_x[i]) dx = -1;
 
-        if(j->jugador_y > j->enemigos_y[i]) dy = 1;
-        if(j->jugador_y < j->enemigos_y[i]) dy = -1;
+            if(j->trofeo_y > j->enemigos_y[i]) dy = 1;
+            if(j->trofeo_y < j->enemigos_y[i]) dy = -1;
+        }
+        else
+        {
+            // comportamiento normal: perseguir jugador
+            if(j->jugador_x > j->enemigos_x[i]) dx = 1;
+            if(j->jugador_x < j->enemigos_x[i]) dx = -1;
+
+            if(j->jugador_y > j->enemigos_y[i]) dy = 1;
+            if(j->jugador_y < j->enemigos_y[i]) dy = -1;
+        }
 
         int nx = j->enemigos_x[i] + dx;
         int ny = j->enemigos_y[i] + dy;
@@ -153,14 +169,18 @@ void juego_mover_enemigos(Juego *j)
             j->enemigos_y[i] = ny;
         }
 
+        // enemigo captura trofeo
         if(j->enemigos_x[i] == j->trofeo_x &&
            j->enemigos_y[i] == j->trofeo_y){
+
+            printf("Enemigo capturo trofeo\n");
 
             j->enemigos_trofeos[i]++;
 
             juego_generar_trofeo(j);
         }
 
+        // reproducción enemigo
         if(j->enemigos_trofeos[i] >= 2 &&
            j->num_enemigos < MAX_ENEMIGOS){
 
@@ -173,8 +193,11 @@ void juego_mover_enemigos(Juego *j)
             j->num_enemigos++;
 
             j->enemigos_trofeos[i] = 0;
+
+            printf("Un enemigo se reprodujo\n");
         }
 
+        // colisión con jugador
         if(j->enemigos_x[i] == j->jugador_x &&
            j->enemigos_y[i] == j->jugador_y){
 

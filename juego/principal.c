@@ -76,6 +76,9 @@ int main(){
             if(tecla_a_vector(tecla,&dx,&dy))
                 juego_intentar_mover(&juego,dx,dy);
 
+                
+                
+
             juego_mover_enemigos(&juego);
         }
 
